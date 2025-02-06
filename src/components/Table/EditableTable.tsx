@@ -193,20 +193,24 @@ const EditableTable: React.FC<EditableTableProps> = ({ data }) => {
                                         }}
                                     >
                                         {editableColumns.includes(key) ? (
-                                            <select value={row[key]} onChange={(e) => handleChange(e.target.value, rowIndex, key)}>
+                                            <Select
+                                                value={row[key] as string}
+                                                onChange={(e) => handleChange(e.target.value, rowIndex, key)}
+                                                fullWidth
+                                            >   
                                                 {typeof originalValues[rowIndex][key] === "string" &&
                                                     originalValues[rowIndex][key].split("/").length === 3 && (
-                                                        <option value={originalValues[rowIndex][key]}>
+                                                    <MenuItem value={originalValues[rowIndex][key]}>
                                                             {originalValues[rowIndex][key]}
-                                                        </option>
+                                                    </MenuItem>
                                                     )
                                                 }
-                                                <option value="-">-</option>
-                                                <option value="N/A">N/A</option>
-                                                <option value="ATRASADO">ATRASADO</option>
-                                                <option value="NO PRAZO">NO PRAZO</option>
-                                                <option value="ENTREGUE">ENTREGUE</option>
-                                            </select>
+                                                <MenuItem value="-">-</MenuItem>
+                                                <MenuItem value="N/A">N/A</MenuItem>
+                                                <MenuItem value="ATRASADO">ATRASADO</MenuItem>
+                                                <MenuItem value="NO PRAZO">NO PRAZO</MenuItem>
+                                                <MenuItem value="ENTREGUE">ENTREGUE</MenuItem>
+                                            </Select>
                                         ) : (
                                             row[key] as string
                                         )}
