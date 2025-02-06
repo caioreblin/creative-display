@@ -75,15 +75,15 @@ const tableColumnsName: Record<string, string> = {
 };
 
 const columnWidths: Record<string, string> = {
-    pi: "80px",
-    start: "120px",
-    projeto: "120px",
-    dtOp: "120px",
-    pa: "80px",
-    client: "150px",
-    description: "200px",
-    observacao: "250px",
-    estoque: "120px",
+    pi: "70px",
+    start: "80px",
+    projeto: "80px",
+    dtOp: "80px",
+    pa: "70px",
+    client: "70px",
+    description: "100px",
+    observacao: "100px",
+    estoque: "50px",
     "1a PECA": `${EDITABLE_COLUMNS_WIDTH}`,
     METAL: `${EDITABLE_COLUMNS_WIDTH}`,
     PINTURA: `${EDITABLE_COLUMNS_WIDTH}`,
@@ -127,9 +127,13 @@ const normalizeData = (data: any[]) => {
         });
 
         if (Array.isArray(row.phase)) {
-            row.phase.forEach((phaseItem: { type: string; value: string }) => {
+            row.phase.forEach((phaseItem: { type: string; value: any }) => {
                 if (tableColumnsName[phaseItem.type]) {
-                    normalizedRow[phaseItem.type] = phaseItem.value;
+                    if (typeof phaseItem.value === "string" && Date.parse(phaseItem.value)) {
+                        normalizedRow[phaseItem.type] = formatDate(new Date(phaseItem.value));
+                    } else {
+                        normalizedRow[phaseItem.type] = phaseItem.value;
+                    }
                 }
             });
         }
@@ -137,8 +141,14 @@ const normalizeData = (data: any[]) => {
     });
 };
 
+
 const EditableTable: React.FC<EditableTableProps> = ({ data }) => {
     const [tableData, setTableData] = useState(normalizeData(data));
+    const [originalValues] = useState(
+        tableData.map(row => ({
+            ...row
+        }))
+    );
 
     const handleChange = (newValue: string, rowIndex: number, field: string) => {
         const updatedData = [...tableData];
@@ -149,7 +159,7 @@ const EditableTable: React.FC<EditableTableProps> = ({ data }) => {
         toast.success(
             `Valor da coluna ${tableColumnsName[field]} alterado de ${oldValue} para ${newValue}. Um e-mail foi enviado para teste@elemental.com.br`,
             {
-                autoClose: 7000,
+                autoClose: 5000,
                 position: "top-right",
                 style: { width: "85%" }
             }
@@ -183,16 +193,20 @@ const EditableTable: React.FC<EditableTableProps> = ({ data }) => {
                                         }}
                                     >
                                         {editableColumns.includes(key) ? (
-                                            <Select
-                                                value={row[key] as string}
-                                                onChange={(e) => handleChange(e.target.value, rowIndex, key)}
-                                                fullWidth
-                                            >
-                                                <MenuItem value="-">-</MenuItem>
-                                                <MenuItem value="ATRASADO">ATRASADO</MenuItem>
-                                                <MenuItem value="NO PRAZO">NO PRAZO</MenuItem>
-                                                <MenuItem value="ENTREGUE">ENTREGUE</MenuItem>
-                                            </Select>
+                                            <select value={row[key]} onChange={(e) => handleChange(e.target.value, rowIndex, key)}>
+                                                {typeof originalValues[rowIndex][key] === "string" &&
+                                                    originalValues[rowIndex][key].split("/").length === 3 && (
+                                                        <option value={originalValues[rowIndex][key]}>
+                                                            {originalValues[rowIndex][key]}
+                                                        </option>
+                                                    )
+                                                }
+                                                <option value="-">-</option>
+                                                <option value="N/A">N/A</option>
+                                                <option value="ATRASADO">ATRASADO</option>
+                                                <option value="NO PRAZO">NO PRAZO</option>
+                                                <option value="ENTREGUE">ENTREGUE</option>
+                                            </select>
                                         ) : (
                                             row[key] as string
                                         )}
