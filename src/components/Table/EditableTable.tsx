@@ -5,13 +5,12 @@ import {
     TableCell,
     TableContainer,
     TableHead,
-    TableRow,
-    Select,
-    MenuItem
+    TableRow
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Select } from "../../styles/Select";
 
 const StyledTableCell = styled(TableCell)({
     fontWeight: "bold",
@@ -193,23 +192,19 @@ const EditableTable: React.FC<EditableTableProps> = ({ data }) => {
                                         }}
                                     >
                                         {editableColumns.includes(key) ? (
-                                            <Select
-                                                value={row[key] as string}
-                                                onChange={(e) => handleChange(e.target.value, rowIndex, key)}
-                                                fullWidth
-                                            >   
+                                            <Select value={row[key]} onChange={(e) => handleChange(e.target.value, rowIndex, key)}>
                                                 {typeof originalValues[rowIndex][key] === "string" &&
                                                     originalValues[rowIndex][key].split("/").length === 3 && (
-                                                    <MenuItem value={originalValues[rowIndex][key]}>
+                                                    <option value={originalValues[rowIndex][key]}>
                                                             {originalValues[rowIndex][key]}
-                                                    </MenuItem>
+                                                    </option>
                                                     )
                                                 }
-                                                <MenuItem value="-">-</MenuItem>
-                                                <MenuItem value="N/A">N/A</MenuItem>
-                                                <MenuItem value="ATRASADO">ATRASADO</MenuItem>
-                                                <MenuItem value="NO PRAZO">NO PRAZO</MenuItem>
-                                                <MenuItem value="ENTREGUE">ENTREGUE</MenuItem>
+                                                <option value="-">-</option>
+                                                <option value="N/A">N/A</option>
+                                                <option value="ATRASADO">ATRASADO</option>
+                                                <option value="NO PRAZO">NO PRAZO</option>
+                                                <option value="ENTREGUE">ENTREGUE</option>
                                             </Select>
                                         ) : (
                                             row[key] as string
